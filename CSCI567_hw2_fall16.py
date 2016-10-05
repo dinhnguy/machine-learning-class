@@ -38,6 +38,7 @@ plt.ylabel("Frequency");
 plt.show(block=True);
 
 
+
 #%%
 # define linear regression classifiere
 def lin_reg(data,y, x):
