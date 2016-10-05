@@ -197,8 +197,28 @@ print("The MSE on training set is: %f" %(error));
 test_MSE = np.mean((lin_reg(train_data[:,best], train_target, test_data[:,best]) - test_target)**2);
 print("The MSE on testing set is: %f" %(test_MSE));
 
-        
-    
+print("Polynomial feature expansion");       
+mean = np.mean(train_data, axis = 0);
+sd = np.std(train_data, axis =0);
+norm_train = np.divide(train_data - mean, sd);
+norm_test = np.divide(test_data - mean, sd);
+poly_train = train_data;
+poly_test = test_data;
+for i in range(13):
+    poly_train = np.append(poly_train, norm_train[:,i:i+1]**2, axis =1);
+    poly_test = np.append(poly_test, norm_test[:,i:i+1]**2, axis = 1);
+
+pairs = np.array(list(itertools.combinations(range(13),2)));
+for it in pairs:
+    new_train_col = norm_train[:,it[0]:it[0]+1] *norm_train[:, it[1]:it[1]+1];
+    new_test_col = norm_test[:,it[0]:it[0]+1] *norm_test[:, it[1]:it[1]+1];
+    poly_train = np.append(poly_train, new_train_col, axis =1);
+    poly_test = np.append(poly_test, new_test_col, axis =1 );
+
+train_MSE = np.mean((lin_reg(poly_train, train_target, poly_train) - train_target)**2);
+test_MSE = np.mean((lin_reg(poly_train, train_target, poly_test) - test_target)**2);
+train_MSE, test_MSE
+
 
     
     
