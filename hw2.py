@@ -1,13 +1,13 @@
-
-# coding: utf-8
-
-# In[210]:
+#CODE FOR MACHINE LEARNING HW2
 
 import numpy as np
 from numpy import *
 import scipy.linalg
 import matplotlib.pyplot as plt
-from sklearn.datasets import load_boston
+from sklearn.datasets import load_boston #LOAD THE DATA FROM SKLEARN
+import itertools
+
+#%%
 boston = load_boston();
 data = boston.data; # feature data
 target = boston.target; #target value
@@ -17,7 +17,7 @@ test_target = target[range(0,506,7)];#splitting the target values
 train_target = np.delete(target,range(0,506,7)); #target values for training
 
 
-# In[3]:
+# Histogram of atributes and correlation between each feature and target
 
 for i in range(train_data.shape[1]):
     plt.figure();
@@ -26,7 +26,9 @@ for i in range(train_data.shape[1]):
     plt.xlabel("%dth Feature" %(i));
     plt.ylabel("Frequency");
     corr = np.corrcoef(train_data[:,i],train_target)[0,1];
+    
     print("The correlation between the %d feature and the target values is %f" %(i,corr));
+    print("");
 
 plt.figure();    
 plt.hist(train_target, bins=10);
@@ -36,11 +38,10 @@ plt.ylabel("Frequency");
 plt.show(block=True);
 
 
-# In[36]:
-
+#%%
+# define linear regression classifiere
 def lin_reg(data,y, x):
-    import numpy as np
-    import scipy.linalg
+
     # data = training data
     # x = testing attribute vectors, in form of 2d array, even if it's just one vector i.e np.array([vector])
     # y = target values of data
@@ -58,7 +59,7 @@ def lin_reg(data,y, x):
     X = np.concatenate((x_0,norm_data), axis=1); # matrix X after append the 1's column
     
     w = ((linalg.pinv(X.T.dot(X))).dot(X.T)).dot(y); # w=(X^t*X)^-1*X^T*y
-    return w.dot(x_new.T);
+    return w.dot(x_new.T); # w times x = y
 
 
 # In[48]:
@@ -76,7 +77,7 @@ print("The MSE on test set is: %f" %(test_MSE));
 
 
 # In[187]:
-
+# define ridge regression classifer;
 def ridge_reg(data,lam, y, x):
     import numpy as np
     import scipy.linalg
@@ -103,10 +104,11 @@ def ridge_reg(data,lam, y, x):
 
 # In[188]:
 
-print("")
+print("");
 print("Ridge Regression")
 l =[.01,.1,1.0];
 for lam in l:
+    print("");
     print("lambda = %f" %(lam));
     # MSE for training set:
     train_MSE = np.mean((ridge_reg(train_data, lam, train_target, train_data) - train_target)**2);
@@ -115,10 +117,11 @@ for lam in l:
     # MSE for test set:
     test_MSE=np.mean((ridge_reg(train_data, lam, train_target, test_data) - test_target)**2);
     print("The MSE on test set is: %f" %(test_MSE));
+    
 
 
 # In[193]:
-
+print("");
 print("Ridge Regression with Cross Validation")
 index =np.arange(train_data.shape[0]);
 np.random.shuffle(index);
@@ -138,8 +141,6 @@ for lam in [.0001, .001, .01, .1, 1, 10]:
     print("The MSE on test set is: %f" %(test_MSE));
     print("")
 
-
-# In[144]:
 
 print("");
 print("Feature Selection");
@@ -170,17 +171,8 @@ train_MSE = np.mean((lin_reg(train_data[:,feature], train_target, train_data[:, 
 test_MSE = np.mean((lin_reg(train_data[:,feature], train_target, test_data[:,feature]) - test_target)**2);
 print("The MSE on training set is: %f" %(train_MSE));
 print("The MSE on test set is: %f" %(test_MSE));
-print("");
-        
-    
-    
 
-                
-
-
-# In[221]:
-
-import itertools
+#SELECTION WITH BRUTE FORCE SEARCH
 combinations = np.array(list(itertools.combinations(range(13),4)));
 best = combinations[0];
 error = np.mean((lin_reg(train_data[:,best], train_target, train_data[:,best]) - train_target)**2);
@@ -196,7 +188,9 @@ print("The best combination of features is: " + str(best));
 print("The MSE on training set is: %f" %(error));
 test_MSE = np.mean((lin_reg(train_data[:,best], train_target, test_data[:,best]) - test_target)**2);
 print("The MSE on testing set is: %f" %(test_MSE));
+print("");
 
+#Polynomial feature expansion:
 print("Polynomial feature expansion");       
 mean = np.mean(train_data, axis = 0);
 sd = np.std(train_data, axis =0);
@@ -217,7 +211,9 @@ for it in pairs:
 
 train_MSE = np.mean((lin_reg(poly_train, train_target, poly_train) - train_target)**2);
 test_MSE = np.mean((lin_reg(poly_train, train_target, poly_test) - test_target)**2);
-train_MSE, test_MSE
+print("");
+print("The MSE on training set is: %f" %(train_MSE));
+print("The MSE on testing set is: %f" %(test_MSE));
 
 
     
